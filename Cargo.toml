@@ -1,0 +1,11 @@
+[package]
+name = "cool_rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+structsy = "0.4.0"
+#palette = { version = "0.6.0", default-features = false, features = ["std"] }
+clap = "3.1.18"
