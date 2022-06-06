@@ -5,9 +5,9 @@ pub struct Scheme {
     pub colors: Vec<Canonical>,
 }
 
-const BIT_SHIFT_RED: usize = 4 * 6;
-const BIT_SHIFT_GREEN: usize = 4 * 4;
-const BIT_SHIFT_BLUE: usize = 4 * 2;
+const BIT_SHIFT_RED: usize =   3 * 8;
+const BIT_SHIFT_GREEN: usize = 2 * 8;
+const BIT_SHIFT_BLUE: usize =      8;
 
 pub type Canonical = RGBA<u8>;
 pub type Packed = u32;
