@@ -9,3 +9,5 @@ edition = "2021"
 structsy = "0.4.0"
 #palette = { version = "0.6.0", default-features = false, features = ["std"] }
 clap = "3.1.18"
+regex = "1.5.6"
+lazy_static = "1.4"

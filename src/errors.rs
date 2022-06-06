@@ -2,8 +2,10 @@ use std::{
     error::Error as StdError,
     fmt::Display,
     io,
-    num::ParseIntError,
+    num::{ParseFloatError, ParseIntError},
 };
+
+use crate::formats;
 
 #[derive(Debug)]
 pub enum ColorError {
@@ -30,6 +32,8 @@ impl From<ParseIntError> for ColorError {
 
 impl StdError for ColorError {}
 
+// READER
+
 #[derive(Debug)]
 pub enum SchemeReaderError {
     IOError(io::Error, String),
@@ -54,3 +58,17 @@ impl From<io::Error> for SchemeReaderError {
 }
 
 impl StdError for SchemeReaderError {}
+
+// FORMATS
+
+#[derive(Debug)]
+pub struct ParseFormatError(pub formats::ColorFormats, pub String);
+
+impl From<ParseFloatError> for ParseFormatError {
+    fn from(orig: ParseFloatError) -> Self {
+        ParseFormatError(
+            formats::ColorFormats::RGBf,
+            format!("unable to parse captured string to float: {}", orig),
+        )
+    }
+}

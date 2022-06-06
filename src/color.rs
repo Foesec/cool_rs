@@ -31,6 +31,16 @@ impl<T: Copy> Copy for RGBA<T> {}
 impl<T: Copy> Copy for RGB<T> {}
 
 impl Canonical {
+
+    pub fn from_f(r: f32, g: f32, b: f32, a: f32) -> Canonical {
+        Self::new(
+            (r * 255.0).round() as u8,
+            (g * 255.0).round() as u8,
+            (b * 255.0).round() as u8,
+            (a * 255.0).round() as u8
+        )
+    }
+
     pub fn parse_from_hex(input: &str) -> Result<Self, ColorError> {
         let hex_str = input.trim_start_matches('#');
         if hex_str.len() == 6 {
