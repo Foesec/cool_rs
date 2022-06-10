@@ -52,8 +52,8 @@ lazy_static! {
     .unwrap();
 }
 
-struct RGBFloatFormat {}
-struct RGBu8Format {}
+pub struct RGBFloatFormat {}
+pub struct RGBu8Format {}
 
 impl ColorFormat for RGBFloatFormat {
     fn matches(color_str: &str) -> bool {
@@ -94,5 +94,56 @@ fn extract_float_in_range(match_opt: Option<Match>) -> Result<f32, ParseFormatEr
             ColorFormats::RGBf,
             "required float color component is missing".into(),
         )),
+    }
+}
+
+#[cfg(test)]
+mod tests_rgb_float_format {
+    use super::*;
+
+    #[test]
+    fn test_color_format_matches() {
+        let ok_candidates = vec![
+            "rgb(0.0, 0.0, 0.0)",         // - rgb variations
+            "rgb(0.0, 0.0, 0.0, 0.0)",    // |
+            "rgba(0.0, 0.0, 0.0)",        // |
+            "rgba(0.0, 0.0, 0.0, 0.0)",   // |
+            "RGBA(0.0, 0.0, 0.0)",        // - casing
+            "RgBa(0.0, 0.0, 0.0)",        // |
+            "rGb(0.0, 0.0, 0.0)",         // |
+            " rgb( 0.5  ,  1.0 ,0.25 ) ", // - strange spacings
+            "rgb(0.111111111111111111, 0.2, 0.12345, 0.696969)",
+            "rgba(0.00, 0.0000, 0.00000, 0.0)",
+            // invalid but matches
+            "rgb(1.5, 0.91, 1.99999)", // - starts with `1` (but > 1)
+        ];
+
+        for cand in ok_candidates {
+            assert!(RGBFloatFormat::matches(cand))
+        }
+
+        let ko_candidates = vec![
+            "rgb(0, 0, 0)",
+            "rgba(0, 0, 0)",
+            "rgb(-1.0, 1.0, 0.0)",
+            "rgba(1.0.0, 1.0, 0.1001)",
+        ];
+
+        for cand in ko_candidates {
+            assert!(!RGBFloatFormat::matches(cand))
+        }
+    }
+
+    #[test]
+    fn test_color_format_parse() {
+        assert_eq!(
+            RGBFloatFormat::parse("rgb(0.0, 0.0, 0.0").unwrap(),
+            Canonical::from_f(0.0, 0.0, 0.0, 1.0)
+        );
+
+        assert_eq!(
+            RGBFloatFormat::parse("rgba(0.5, 0.123, 0.1010, 0.90)").unwrap(),
+            Canonical::from_f(0.5, 0.123, 0.1010, 0.90)
+        );
     }
 }
