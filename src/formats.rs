@@ -10,8 +10,8 @@ pub enum ColorFormats {
 }
 
 pub trait ColorFormat {
-    fn matches(color_str: &str) -> bool;
-    fn parse(color_str: &str) -> Result<Canonical, ParseFormatError>;
+    fn matches(colr: &str) -> bool;
+    fn parse(colr: &str) -> Result<Canonical, ParseFormatError>;
 }
 
 lazy_static! {
@@ -50,10 +50,70 @@ lazy_static! {
       (?P<a>[0-9a-fA-F]{2})?"
     )
     .unwrap();
+    static ref RGBA_GENERIC_REGEX: Regex = Regex::new(
+        r"(?x)
+        \(
+            \s*
+            (
+              (?:[01]\.\d+)|
+              (?:\d{1,3})
+            )
+            (?:\s*,\s*)
+            (
+              (?:[01]\.\d+)|
+              (?:\d{1,3})
+            )
+            (?:\s*,\s*)
+            (
+              (?:[01]\.\d+)|
+              (?:\d{1,3})
+            )
+            (
+              (?:\s*,\s*)?
+              (?:[01]\.\d+)|
+              (?:\d{1,3})
+            )?
+            \s*
+        \)"
+    )
+    .unwrap();
 }
 
 pub struct RGBFloatFormat {}
 pub struct RGBu8Format {}
+
+pub struct RGBAFormat {}
+
+impl ColorFormat for RGBAFormat {
+    fn matches(colr: &str) -> bool {
+        RGBA_GENERIC_REGEX.is_match(colr.trim())
+    }
+
+    fn parse(colr: &str) -> Result<Canonical, ParseFormatError> {
+        let caps = RGBA_GENERIC_REGEX.captures(colr);
+        let caps = caps.ok_or(ParseFormatError(ColorFormats::RGBf, colr.into()))?;
+
+        let r = caps
+            .get(1)
+            .ok_or(ParseFormatError(ColorFormats::RGBf, colr.into()))?;
+
+        let g = caps
+            .get(1)
+            .ok_or(ParseFormatError(ColorFormats::RGBf, colr.into()))?
+            .as_str();
+
+        let b = caps
+            .get(1)
+            .ok_or(ParseFormatError(ColorFormats::RGBf, colr.into()))?
+            .as_str();
+
+        todo!()
+    }
+}
+
+fn try_parse_color(colr: &str) -> Result<Canonical, ParseFormatError> {
+    todo!()
+}
 
 impl ColorFormat for RGBFloatFormat {
     fn matches(color_str: &str) -> bool {
